@@ -1,4 +1,7 @@
 <script>
+  import { onMount } from 'svelte'
+  import { VctrApi } from './libs/viewer-api'
+
   const Shape = {
     box: 'box',
     sphere: 'sphere',
@@ -10,6 +13,20 @@
   ]
 
   let selectedShape = Shape.box
+  let viewerApi
+  let isViewerApiReady = false
+
+  onMount(async () => {
+    viewerApi = new VctrApi('vectary-viewer')
+    await viewerApi.init()
+    isViewerApiReady = true
+  })
+
+  function handleShapeChange(value) {
+    viewerApi.setVisibility(value, true, true)
+  }
+
+  $: isViewerApiReady && handleShapeChange(selectedShape)
 </script>
 
 <div class="configurator">
