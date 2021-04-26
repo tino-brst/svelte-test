@@ -7,12 +7,24 @@
     sphere: 'sphere',
   }
 
+  const Color = {
+    blue: 'blue0',
+    crimson: 'crimson0',
+  }
+
   const shapeOptions = [
     { label: 'Box', value: Shape.box },
     { label: 'Sphere', value: Shape.sphere },
   ]
 
+  const colorOptions = [
+    { label: 'Blue', value: Color.blue },
+    { label: 'Crimson', value: Color.crimson },
+  ]
+
   let selectedShape = Shape.box
+  let selectedColor = Color.blue
+
   let viewerApi
   let isViewerApiReady = false
 
@@ -23,10 +35,16 @@
   })
 
   function handleShapeChange(value) {
+    viewerApi.setMaterial(value, selectedColor)
     viewerApi.setVisibility(value, true, true)
   }
 
+  function handleColorChange(value) {
+    viewerApi.setMaterial(selectedShape, value)
+  }
+
   $: isViewerApiReady && handleShapeChange(selectedShape)
+  $: isViewerApiReady && handleColorChange(selectedColor)
 </script>
 
 <div class="configurator">
@@ -37,18 +55,34 @@
     mouseFollow="0.5"
   />
   <div class="configurator__controls">
-    <h2 class="group-title">Shape</h2>
-    {#each shapeOptions as option}
-      <label class="option" class:option_selected={selectedShape === option.value}>
-        <input
-          class="option__input"
-          type="radio"
-          bind:group={selectedShape}
-          value={option.value}
-          checked
-        />{option.label}</label
-      >
-    {/each}
+    <div class="group">
+      <h2 class="group-title">Shape</h2>
+      {#each shapeOptions as option}
+        <label class="option" class:option_selected={selectedShape === option.value}>
+          <input
+            class="option__input"
+            type="radio"
+            bind:group={selectedShape}
+            value={option.value}
+            checked
+          />{option.label}</label
+        >
+      {/each}
+    </div>
+    <div class="group">
+      <h2 class="group-title">Color</h2>
+      {#each colorOptions as option}
+        <label class="option" class:option_selected={selectedColor === option.value}>
+          <input
+            class="option__input"
+            type="radio"
+            bind:group={selectedColor}
+            value={option.value}
+            checked
+          />{option.label}</label
+        >
+      {/each}
+    </div>
   </div>
 </div>
 
@@ -73,7 +107,12 @@
     box-shadow: 0px 10px 20px 0px rgba(0, 0, 0, 0.1);
   }
 
+  .group:not(:last-child) {
+    margin-bottom: 16px;
+  }
+
   .group-title {
+    font-size: 18px;
     margin-top: 0;
     margin-bottom: 8px;
   }
